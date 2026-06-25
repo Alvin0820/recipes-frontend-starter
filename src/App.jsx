@@ -6,24 +6,49 @@ import RecipeList from './components/RecipeList'
 // This is your base URL for your API
 const API_URL = 'http://localhost:8080'
 
-export default function App() {
+export default function App(){
   // `recipes` is just a local snapshot — a successful request below won't show up
   // on screen until you also call setRecipes. The server and this state don't auto-sync.
   // AGAIN, the frontend UI state and the server data don't auto-sync - you must do this manually!
   // WHAT DOES THAT MEAN: Just becuase you were able to modify the state/data in the server with the fetch calls, doesn't mean the UI will reflect that automatically.
   const [recipes, setRecipes] = useState([])
 
+function refreshPage(){
+  fetch(`${API_URL}/api/recipes`)
+    .then(response => response.json())
+    .then(data => {
+      console.log(data)
+      setRecipes(data);
+    })
+}
   useEffect(() => {
     // TODO (Part 1): fetch `${API_URL}/api/recipes`, convert the response to JSON, and setRecipes with it
+    refreshPage()
   }, [])
 
   function handleAddRecipe(newRecipe) {
     // TODO (Part 2): POST newRecipe to `${API_URL}/api/recipes`, then add the created recipe to `recipes`
-  }
+    fetch(`${API_URL}/api/recipes`, {
+      method: "POST", 
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(newRecipe)})
+      .then(response => response.json())
+      .then(info => {
+        console.log(info)
+        refreshPage()
+      })
+    }
 
   function handleDeleteRecipe(id) {
     // TODO (Part 3): DELETE `${API_URL}/api/recipes/${id}`, then remove that recipe from `recipes`
-  }
+    console.log("fgrtdf")
+    fetch(`${API_URL}/api/recipes/${id}`, {
+      method: "DELETE",
+      headers: {"Content-Type": "application/json"},
+      })
+      refreshPage()
+      }
+
 
   function handleToggleVegetarian(id) {
     // TODO (Stretch): PATCH `${API_URL}/api/recipes/${id}` to flip `vegetarian`, then update `recipes`
@@ -40,4 +65,4 @@ export default function App() {
       />
     </div>
   )
-}
+  }
